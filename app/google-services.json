@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "924956148517",
+    "project_id": "app-tejisur",
+    "storage_bucket": "app-tejisur.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:924956148517:android:87e9c48b4f7f56502b10cc",
+        "android_client_info": {
+          "package_name": "com.app_moviles.tejisurapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBv7KsmREUybeQQD15UBDoWe-ohcUrISI8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
