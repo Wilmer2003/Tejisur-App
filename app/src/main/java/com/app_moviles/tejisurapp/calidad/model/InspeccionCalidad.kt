@@ -19,13 +19,12 @@ data class InspeccionCalidad(
     val supervisor: String
 ) {
     init {
-        require(inspeccionadas >= 0) { "La cantidad inspeccionada debe ser mayor o igual a 0" }
+        require(inspeccionadas > 0) { "La cantidad inspeccionada debe ser mayor a 0" }
         require(aprobadas >= 0) { "La cantidad aprobada debe ser mayor o igual a 0" }
         require(rechazadas >= 0) { "La cantidad rechazada debe ser mayor o igual a 0" }
         require(enReproceso >= 0) { "La cantidad en reproceso debe ser mayor o igual a 0" }
-        require(aprobadas + rechazadas + enReproceso <= inspeccionadas) {
-            "La suma de aprobadas, rechazadas y en reproceso no puede superar las prendas inspeccionadas"
+        require(aprobadas + rechazadas + enReproceso == inspeccionadas) {
+            "La suma de aprobadas, rechazadas y en reproceso debe ser igual a la cantidad inspeccionada"
         }
     }
 }
-

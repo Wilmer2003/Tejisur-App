@@ -1,31 +1,489 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tejisur_background"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="@dimen/margin_screen">
+    android:fillViewport="true"
+    tools:context=".calidad.ui.RegistroInspeccionFragment">
 
-    <TextView
-        android:id="@+id/tvTituloInspeccion"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clRegistroInspeccion"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/placeholder_registro_inspeccion_titulo"
-        android:textColor="@color/tejisur_text_primary"
-        android:textSize="@dimen/text_title"
-        android:textStyle="bold" />
+        android:padding="@dimen/margin_screen">
 
-    <TextView
-        android:id="@+id/tvDescripcionInspeccion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_label"
-        android:gravity="center"
-        android:text="@string/placeholder_registro_inspeccion_descripcion"
-        android:textColor="@color/tejisur_text_secondary"
-        android:textSize="@dimen/text_body" />
+        <!-- Encabezado -->
+        <TextView
+            android:id="@+id/tvTituloInspeccion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/inspeccion_titulo"
+            android:textColor="@color/tejisur_primary"
+            android:textSize="@dimen/text_title"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/tvSubtituloInspeccion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:text="@string/inspeccion_subtitulo"
+            android:textColor="@color/tejisur_text_secondary"
+            android:textSize="@dimen/text_subtitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTituloInspeccion" />
 
+        <!-- Tarjeta de Contexto y Supervisor Automático -->
+        <LinearLayout
+            android:id="@+id/cardSupervisor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_section"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:padding="@dimen/padding_card"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvSubtituloInspeccion">
+
+            <TextView
+                android:id="@+id/tvSupervisor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/inspeccion_supervisor_formato"
+                android:textColor="@color/tejisur_primary"
+                android:textSize="@dimen/text_label"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvFechaHora"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="@string/inspeccion_fecha_hora_formato"
+                android:textColor="@color/tejisur_text_secondary"
+                android:textSize="@dimen/text_body" />
+        </LinearLayout>
+
+        <!-- Orden de Trabajo -->
+        <TextView
+            android:id="@+id/tvLabelOt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_section"
+            android:text="@string/label_orden_trabajo"
+            android:textColor="@color/tejisur_text_primary"
+            android:textSize="@dimen/text_label"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardSupervisor" />
+
+        <Spinner
+            android:id="@+id/spinnerOt"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_input"
+            android:layout_marginTop="@dimen/margin_label"
+            android:background="@drawable/bg_input"
+            android:spinnerMode="dropdown"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvLabelOt" />
+
+        <TextView
+            android:id="@+id/tvErrorOt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:textColor="@color/tejisur_error"
+            android:textSize="@dimen/text_error"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spinnerOt"
+            tools:text="@string/error_ot_requerida" />
+
+        <!-- Lote -->
+        <TextView
+            android:id="@+id/tvLabelLote"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_section"
+            android:text="@string/label_lote"
+            android:textColor="@color/tejisur_text_primary"
+            android:textSize="@dimen/text_label"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvErrorOt" />
+
+        <Spinner
+            android:id="@+id/spinnerLote"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_input"
+            android:layout_marginTop="@dimen/margin_label"
+            android:background="@drawable/bg_input"
+            android:spinnerMode="dropdown"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvLabelLote" />
+
+        <TextView
+            android:id="@+id/tvErrorLote"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:textColor="@color/tejisur_error"
+            android:textSize="@dimen/text_error"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spinnerLote"
+            tools:text="@string/error_lote_requerido" />
+
+        <!-- Operario -->
+        <TextView
+            android:id="@+id/tvLabelOperario"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_section"
+            android:text="@string/label_operario"
+            android:textColor="@color/tejisur_text_primary"
+            android:textSize="@dimen/text_label"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvErrorLote" />
+
+        <Spinner
+            android:id="@+id/spinnerOperario"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_input"
+            android:layout_marginTop="@dimen/margin_label"
+            android:background="@drawable/bg_input"
+            android:spinnerMode="dropdown"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvLabelOperario" />
+
+        <TextView
+            android:id="@+id/tvErrorOperario"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:textColor="@color/tejisur_error"
+            android:textSize="@dimen/text_error"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spinnerOperario"
+            tools:text="@string/error_operario_requerido" />
+
+        <!-- Conteo de prendas (Título de sección) -->
+        <TextView
+            android:id="@+id/tvLabelConteoPrendas"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_section"
+            android:text="@string/label_conteo_prendas"
+            android:textColor="@color/tejisur_text_primary"
+            android:textSize="@dimen/text_label"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvErrorOperario" />
+
+        <!-- Fila 1 Columna 1: Inspeccionadas -->
+        <LinearLayout
+            android:id="@+id/llColInspeccionadas"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_label"
+            android:layout_marginEnd="@dimen/margin_small"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@id/llColAprobadas"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvLabelConteoPrendas">
+
+            <TextView
+                android:id="@+id/tvLabelInspeccionadas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_cant_inspeccionada"
+                android:textColor="@color/tejisur_text_secondary"
+                android:textSize="@dimen/text_error" />
+
+            <EditText
+                android:id="@+id/etInspeccionadas"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_input"
+                android:layout_marginTop="@dimen/margin_small"
+                android:background="@drawable/bg_input"
+                android:gravity="center"
+                android:hint="@string/hint_cantidad_cero"
+                android:importantForAutofill="no"
+                android:inputType="number"
+                android:padding="@dimen/padding_input"
+                android:textColor="@color/tejisur_primary"
+                android:textSize="@dimen/text_value"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvErrorInspeccionadas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:textColor="@color/tejisur_error"
+                android:textSize="@dimen/text_error"
+                android:visibility="gone"
+                tools:text="@string/error_inspeccionadas_requeridas" />
+        </LinearLayout>
+
+        <!-- Fila 1 Columna 2: Aprobadas -->
+        <LinearLayout
+            android:id="@+id/llColAprobadas"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_small"
+            android:layout_marginTop="@dimen/margin_label"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/llColInspeccionadas"
+            app:layout_constraintTop_toBottomOf="@id/tvLabelConteoPrendas">
+
+            <TextView
+                android:id="@+id/tvLabelAprobadas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_cant_aprobada"
+                android:textColor="@color/tejisur_text_secondary"
+                android:textSize="@dimen/text_error" />
+
+            <EditText
+                android:id="@+id/etAprobadas"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_input"
+                android:layout_marginTop="@dimen/margin_small"
+                android:background="@drawable/bg_input"
+                android:gravity="center"
+                android:hint="@string/hint_cantidad_cero"
+                android:importantForAutofill="no"
+                android:inputType="number"
+                android:padding="@dimen/padding_input"
+                android:textColor="@color/merma_normal"
+                android:textSize="@dimen/text_value"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvErrorAprobadas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:textColor="@color/tejisur_error"
+                android:textSize="@dimen/text_error"
+                android:visibility="gone"
+                tools:text="@string/error_aprobadas_requeridas" />
+        </LinearLayout>
+
+        <!-- Fila 2 Columna 1: Rechazadas -->
+        <LinearLayout
+            android:id="@+id/llColRechazadas"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_section"
+            android:layout_marginEnd="@dimen/margin_small"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@id/llColReproceso"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llColInspeccionadas">
+
+            <TextView
+                android:id="@+id/tvLabelRechazadas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_cant_rechazada"
+                android:textColor="@color/tejisur_text_secondary"
+                android:textSize="@dimen/text_error" />
+
+            <EditText
+                android:id="@+id/etRechazadas"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_input"
+                android:layout_marginTop="@dimen/margin_small"
+                android:background="@drawable/bg_input"
+                android:gravity="center"
+                android:hint="@string/hint_cantidad_cero"
+                android:importantForAutofill="no"
+                android:inputType="number"
+                android:padding="@dimen/padding_input"
+                android:textColor="@color/tejisur_error"
+                android:textSize="@dimen/text_value"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvErrorRechazadas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:textColor="@color/tejisur_error"
+                android:textSize="@dimen/text_error"
+                android:visibility="gone"
+                tools:text="@string/error_rechazadas_requeridas" />
+        </LinearLayout>
+
+        <!-- Fila 2 Columna 2: Reproceso -->
+        <LinearLayout
+            android:id="@+id/llColReproceso"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_small"
+            android:layout_marginTop="@dimen/margin_section"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/llColRechazadas"
+            app:layout_constraintTop_toBottomOf="@id/llColAprobadas">
+
+            <TextView
+                android:id="@+id/tvLabelReproceso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_cant_reproceso"
+                android:textColor="@color/tejisur_text_secondary"
+                android:textSize="@dimen/text_error" />
+
+            <EditText
+                android:id="@+id/etReproceso"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_input"
+                android:layout_marginTop="@dimen/margin_small"
+                android:background="@drawable/bg_input"
+                android:gravity="center"
+                android:hint="@string/hint_cantidad_cero"
+                android:importantForAutofill="no"
+                android:inputType="number"
+                android:padding="@dimen/padding_input"
+                android:textColor="@color/tejisur_accent"
+                android:textSize="@dimen/text_value"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvErrorReproceso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:textColor="@color/tejisur_error"
+                android:textSize="@dimen/text_error"
+                android:visibility="gone"
+                tools:text="@string/error_reproceso_requerido" />
+        </LinearLayout>
+
+        <!-- Tarjeta Balance de Control e Indicador en Vivo -->
+        <LinearLayout
+            android:id="@+id/cardBalance"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_section"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:padding="@dimen/padding_card"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llColRechazadas">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvTituloBalance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/balance_control_titulo"
+                        android:textColor="@color/tejisur_text_secondary"
+                        android:textSize="@dimen/text_body" />
+
+                    <TextView
+                        android:id="@+id/tvBalanceSuma"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:text="@string/balance_suma_formato"
+                        android:textColor="@color/tejisur_primary"
+                        android:textSize="@dimen/text_value"
+                        android:textStyle="bold"
+                        tools:text="Suma: 0 de 0" />
+                </LinearLayout>
+
+                <!-- Insignia de resultado en vivo -->
+                <TextView
+                    android:id="@+id/tvResultadoInsignia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_badge"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
+                    android:text="@string/resultado_sin_definir"
+                    android:textColor="@color/tejisur_text_secondary"
+                    android:textSize="@dimen/text_error"
+                    android:textStyle="bold"
+                    tools:text="Sin definir" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvErrorSuma"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:textColor="@color/tejisur_error"
+                android:textSize="@dimen/text_error"
+                android:visibility="gone"
+                tools:text="@string/error_suma_inspeccion" />
+        </LinearLayout>
+
+        <!-- Botón de Registro de Inspección -->
+        <Button
+            android:id="@+id/btnRegistrarInspeccion"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_button"
+            android:layout_marginTop="@dimen/margin_section"
+            android:background="@drawable/bg_button_primary"
+            android:text="@string/btn_registrar_inspeccion"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_body"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardBalance" />
+
+        <TextView
+            android:id="@+id/tvErrorFormulario"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:gravity="center"
+            android:text="@string/error_formulario_incompleto"
+            android:textColor="@color/tejisur_error"
+            android:textSize="@dimen/text_error"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnRegistrarInspeccion" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
