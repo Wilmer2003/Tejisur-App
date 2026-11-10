@@ -99,6 +99,37 @@
     <string name="nav_consumo">Consumo</string>
     <string name="nav_merma">Merma</string>
     <string name="nav_consulta">Consulta</string>
+    <string name="nav_inspeccion">Inspección</string>
+    <string name="nav_defectos">Defectos</string>
+
+    <!-- ========== EP02 - Calidad (Sprint 2) ========== -->
+    <string name="placeholder_registro_inspeccion_titulo">Registro de Inspección</string>
+    <string name="placeholder_registro_inspeccion_descripcion">Módulo provisional de inspección de calidad (EP02).</string>
+    <string name="placeholder_consulta_defectos_titulo">Consulta de Defectos</string>
+    <string name="placeholder_consulta_defectos_descripcion">Módulo provisional de consulta de defectos (EP02).</string>
+
+    <!-- Disposición del defecto -->
+    <string name="disposicion_rechazo">Rechazo</string>
+    <string name="disposicion_reproceso">Reproceso</string>
+
+    <!-- Estado de incidencia -->
+    <string name="estado_incidencia_pendiente">Pendiente</string>
+    <string name="estado_incidencia_atendida">Atendida</string>
+
+    <!-- Catálogo provisional de tipos de defecto -->
+    <string name="tipo_defecto_costura_abierta">Costura abierta</string>
+    <string name="tipo_defecto_mancha_suciedad">Mancha o suciedad</string>
+    <string name="tipo_defecto_medida_fuera_tolerancia">Medida fuera de tolerancia</string>
+    <string name="tipo_defecto_tela_fallada">Tela fallada</string>
+    <string name="tipo_defecto_hilo_suelto">Hilo suelto</string>
+
+    <!-- Catálogo provisional de causas de defecto -->
+    <string name="causa_defecto_maquina_descalibrada">Máquina descalibrada</string>
+    <string name="causa_defecto_aguja_desgastada">Aguja desgastada</string>
+    <string name="causa_defecto_tension_hilo_incorrecta">Tensión de hilo incorrecta</string>
+    <string name="causa_defecto_error_operario">Error de operario</string>
+    <string name="causa_defecto_material_defectuoso">Material defectuoso</string>
+    <string name="causa_defecto_otra_causa">Otra causa</string>
 
     <!-- ========== Login de Operario (requisito HU01) ========== -->
     <string name="login_titulo">TEJISUR - Control de Producción</string>

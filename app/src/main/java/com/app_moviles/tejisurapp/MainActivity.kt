@@ -13,6 +13,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import com.app_moviles.tejisurapp.calidad.ui.ConsultaDefectosFragment
+import com.app_moviles.tejisurapp.calidad.ui.RegistroInspeccionFragment
 import com.app_moviles.tejisurapp.databinding.ActivityMainBinding
 import com.app_moviles.tejisurapp.produccion.model.AlertaMerma
 import com.app_moviles.tejisurapp.produccion.ui.ConsultaMermasFragment
@@ -24,7 +26,7 @@ import com.app_moviles.tejisurapp.produccion.ui.RegistroMermaFragment
 class MainActivity : AppCompatActivity() {
 
     // PASO 01: Declaro mi variable con el tipo de control
-    enum class Seccion { LOGIN, CONSUMO, MERMA, CONSULTA }
+    enum class Seccion { LOGIN, CONSUMO, MERMA, CONSULTA, INSPECCION, DEFECTOS }
 
     private lateinit var binding: ActivityMainBinding
 
@@ -52,6 +54,8 @@ class MainActivity : AppCompatActivity() {
         binding.navConsumo.setOnClickListener { mostrarSeccion(Seccion.CONSUMO) }
         binding.navMerma.setOnClickListener { mostrarSeccion(Seccion.MERMA) }
         binding.navConsulta.setOnClickListener { mostrarSeccion(Seccion.CONSULTA) }
+        binding.navInspeccion.setOnClickListener { mostrarSeccion(Seccion.INSPECCION) }
+        binding.navDefectos.setOnClickListener { mostrarSeccion(Seccion.DEFECTOS) }
 
         // HU16 - Alerta por merma excesiva
         viewModel.alertaMerma.observe(this) { evento ->
@@ -80,6 +84,8 @@ class MainActivity : AppCompatActivity() {
         Seccion.CONSUMO -> RegistroConsumo()
         Seccion.MERMA -> RegistroMermaFragment()
         Seccion.CONSULTA -> ConsultaMermasFragment()
+        Seccion.INSPECCION -> RegistroInspeccionFragment()
+        Seccion.DEFECTOS -> ConsultaDefectosFragment()
     }
 
     /** Resalta la pestaña activa con el color primario de TEJISUR. */
@@ -88,7 +94,9 @@ class MainActivity : AppCompatActivity() {
         val pestanas: Map<Seccion, TextView> = mapOf(
             Seccion.CONSUMO to binding.navConsumo,
             Seccion.MERMA to binding.navMerma,
-            Seccion.CONSULTA to binding.navConsulta
+            Seccion.CONSULTA to binding.navConsulta,
+            Seccion.INSPECCION to binding.navInspeccion,
+            Seccion.DEFECTOS to binding.navDefectos
         )
         pestanas.forEach { (seccion, vista) ->
             val activa = seccion == seccionActual
