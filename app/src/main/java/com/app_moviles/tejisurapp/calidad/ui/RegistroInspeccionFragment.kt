@@ -1,15 +1,18 @@
 package com.app_moviles.tejisurapp.calidad.ui
 
+import android.content.ActivityNotFoundException
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.app_moviles.tejisurapp.R
 import com.app_moviles.tejisurapp.calidad.model.AnalisisInspeccion
 import com.app_moviles.tejisurapp.calidad.model.InspeccionCalidad
@@ -18,6 +21,10 @@ import com.app_moviles.tejisurapp.databinding.ItemCausaInspeccionBinding
 import com.app_moviles.tejisurapp.produccion.ui.adaptadorConHint
 import com.app_moviles.tejisurapp.produccion.ui.alSeleccionar
 import com.app_moviles.tejisurapp.produccion.ui.mostrarError
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -32,6 +39,38 @@ class RegistroInspeccionFragment : Fragment() {
     private val viewModel: CalidadViewModel by activityViewModels()
 
     private val formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+
+    private val tomarFoto = registerForActivityResult(ActivityResultContracts.TakePicture()) { tomada ->
+        if (tomada) viewModel.recibirFoto(requireContext().applicationContext)
+        else viewModel.cancelarSolicitudFoto()
+    }
+
+    private val elegirFoto = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) viewModel.recibirFoto(requireContext().applicationContext, uri)
+        else viewModel.cancelarSolicitudFoto()
+    }
+
+    private fun solicitarFoto(idGrupo: Long, usarCamara: Boolean) {
+        if (viewModel.fotoOcupada.value == true) return
+        try {
+            val foto = FotoDefecto.crear(requireContext())
+            viewModel.iniciarSolicitudFoto(idGrupo, foto)
+            if (usarCamara) tomarFoto.launch(foto.uri)
+            else elegirFoto.launch("image/*")
+        } catch (_: ActivityNotFoundException) {
+            viewModel.cancelarSolicitudFoto()
+            mostrarErrorFoto()
+        } catch (_: IOException) {
+            mostrarErrorFoto()
+        } catch (_: SecurityException) {
+            viewModel.cancelarSolicitudFoto()
+            mostrarErrorFoto()
+        }
+    }
+
+    private fun mostrarErrorFoto() {
+        Toast.makeText(requireContext(), R.string.foto_defecto_error, Toast.LENGTH_LONG).show()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -162,6 +201,18 @@ class RegistroInspeccionFragment : Fragment() {
             )
         }
 
+        viewModel.fotoOcupada.observe(viewLifecycleOwner) { ocupada ->
+            btnRegistrarInspeccion.isEnabled = !ocupada
+        }
+
+        viewModel.resultadoFoto.observe(viewLifecycleOwner) { evento ->
+            when (evento.obtenerSiNoManejado()) {
+                true -> renderizarCausas()
+                false -> mostrarErrorFoto()
+                null -> Unit
+            }
+        }
+
         viewModel.errorCausas.observe(viewLifecycleOwner) { error ->
             tvErrorCausas.mostrarError(error)
         }
@@ -199,17 +250,36 @@ class RegistroInspeccionFragment : Fragment() {
                 spinnerCausa.setSelection(causas.indexOfFirst { it == causa.causa } + 1)
                 spinnerDisposicion.setSelection(disposiciones.indexOfFirst { it == causa.disposicion } + 1)
                 etCantidad.setText(causa.cantidad)
+                panelFoto.isVisible = !causa.esGrupoAprobado
+                btnQuitarFoto.isVisible = causa.foto != null
+                btnTomarFoto.setOnClickListener { solicitarFoto(causa.idGrupo, usarCamara = true) }
+                btnElegirFoto.setOnClickListener { solicitarFoto(causa.idGrupo, usarCamara = false) }
+                btnQuitarFoto.setOnClickListener {
+                    viewModel.quitarFoto(indice)
+                    renderizarCausas()
+                }
+                causa.foto?.let { foto ->
+                    btnTomarFoto.setText(R.string.foto_defecto_retomar)
+                    btnElegirFoto.setText(R.string.foto_defecto_elegir_otra)
+                    val contexto = requireContext().applicationContext
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        val bitmap = withContext(Dispatchers.IO) { decodificarFoto(contexto, foto.uri, 480) }
+                        if (root.parent == listaCausas) {
+                            imgFoto.isVisible = bitmap != null
+                            imgFoto.setImageBitmap(bitmap)
+                        }
+                    }
+                }
 
                 fun actualizarFila() {
                     if (root.parent != listaCausas) return
                     viewModel.actualizarCausa(
                         indice,
-                        CalidadViewModel.DefectoForm(
+                        viewModel.causasInspeccion[indice].copy(
                             tipo = tipos.getOrNull(spinnerTipo.selectedItemPosition - 1),
                             causa = causas.getOrNull(spinnerCausa.selectedItemPosition - 1),
                             disposicion = disposiciones.getOrNull(spinnerDisposicion.selectedItemPosition - 1),
-                            cantidad = etCantidad.text.toString(),
-                            esGrupoAprobado = causa.esGrupoAprobado
+                            cantidad = etCantidad.text.toString()
                         )
                     )
                 }

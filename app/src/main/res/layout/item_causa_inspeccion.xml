@@ -37,6 +37,63 @@
         android:hint="@string/inspeccion_prendas_afectadas"
         android:inputType="number" />
 
+    <LinearLayout
+        android:id="@+id/panelFoto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_label"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/foto_defecto_opcional"
+            android:textColor="@color/tejisur_text_primary"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/imgFoto"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:layout_marginTop="@dimen/margin_label"
+            android:contentDescription="@string/foto_defecto_descripcion"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnTomarFoto"
+                style="?attr/borderlessButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/foto_defecto_tomar"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/btnElegirFoto"
+                style="?attr/borderlessButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/foto_defecto_elegir"
+                android:textAllCaps="false" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnQuitarFoto"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/foto_defecto_quitar"
+            android:textAllCaps="false"
+            android:visibility="gone" />
+    </LinearLayout>
+
     <Button
         android:id="@+id/btnQuitarCausa"
         style="?attr/borderlessButtonStyle"
