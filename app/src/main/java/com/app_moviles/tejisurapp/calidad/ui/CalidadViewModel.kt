@@ -14,7 +14,6 @@ import com.app_moviles.tejisurapp.calidad.model.DisposicionDefecto
 import com.app_moviles.tejisurapp.calidad.model.EstadoIncidencia
 import com.app_moviles.tejisurapp.calidad.model.InspeccionCalidad
 import com.app_moviles.tejisurapp.calidad.model.TipoDefecto
-import com.app_moviles.tejisurapp.produccion.ui.Evento
 import java.time.LocalDateTime
 import java.util.Locale
 
@@ -39,6 +38,13 @@ class CalidadViewModel : ViewModel() {
         val aprobadas: String = "",
         val rechazadas: String = "",
         val enReproceso: String = ""
+    )
+
+    data class DefectoForm(
+        val tipo: TipoDefecto? = null,
+        val causa: CausaDefecto? = null,
+        val disposicion: DisposicionDefecto? = null,
+        val cantidad: String = ""
     )
 
     data class InspeccionErrores(
@@ -125,9 +131,27 @@ class CalidadViewModel : ViewModel() {
     private val _resultadoEnVivo = MutableLiveData<String?>(null)
     val resultadoEnVivo: LiveData<String?> = _resultadoEnVivo
 
-    /** Evento emitido cuando se registra una inspección con rechazo o reproceso > 0 (HU05). */
-    private val _solicitudRegistroCausa = MutableLiveData<Evento<InspeccionCalidad>>()
-    val solicitudRegistroCausa: LiveData<Evento<InspeccionCalidad>> = _solicitudRegistroCausa
+    var causasInspeccion: List<DefectoForm> = emptyList()
+        private set
+
+    private val _errorCausas = MutableLiveData<Int?>(null)
+    val errorCausas: LiveData<Int?> = _errorCausas
+
+    fun agregarCausa() {
+        causasInspeccion = causasInspeccion + DefectoForm()
+        _errorCausas.value = null
+    }
+
+    fun actualizarCausa(indice: Int, causa: DefectoForm) {
+        if (causasInspeccion.getOrNull(indice) == causa) return
+        causasInspeccion = causasInspeccion.toMutableList().apply { set(indice, causa) }
+        _errorCausas.value = null
+    }
+
+    fun quitarCausa(indice: Int) {
+        causasInspeccion = causasInspeccion.toMutableList().apply { removeAt(indice) }
+        _errorCausas.value = null
+    }
 
     fun onInspeccionOtSeleccionada(index: Int) {
         if (index == inspeccionForm.otIndex) return
@@ -180,11 +204,11 @@ class CalidadViewModel : ViewModel() {
         val apr = AnalisisInspeccion.parsearEntero(inspeccionForm.aprobadas) ?: 0
         val rech = AnalisisInspeccion.parsearEntero(inspeccionForm.rechazadas) ?: 0
         val repr = AnalisisInspeccion.parsearEntero(inspeccionForm.enReproceso) ?: 0
-        val suma = apr + rech + repr
+        val suma = apr.toLong() + rech + repr
 
         _indicadorSuma.value = "Suma: $suma de $insp"
 
-        _resultadoEnVivo.value = if (insp > 0 && suma == insp) {
+        _resultadoEnVivo.value = if (insp > 0 && suma == insp.toLong()) {
             AnalisisInspeccion.calcularResultado(apr, rech, repr)
         } else {
             null
@@ -266,6 +290,27 @@ class CalidadViewModel : ViewModel() {
         val rechazadas = AnalisisInspeccion.parsearEntero(form.rechazadas) ?: return null
         val enReproceso = AnalisisInspeccion.parsearEntero(form.enReproceso) ?: return null
 
+        val causas = if (rechazadas > 0 || enReproceso > 0) causasInspeccion else emptyList()
+        val cantidades = causas.map { AnalisisInspeccion.parsearEntero(it.cantidad) ?: 0 }
+        if (causas.zip(cantidades).any { (causa, cantidad) ->
+                causa.tipo == null || causa.causa == null || causa.disposicion == null || cantidad <= 0
+            }
+        ) {
+            _errorCausas.value = R.string.error_causa_incompleta
+            return null
+        }
+
+        val rechazadasConCausa = causas.indices.sumOf { indice ->
+            cantidades[indice].toLong().takeIf {
+                causas[indice].disposicion == DisposicionDefecto.RECHAZO
+            } ?: 0L
+        }
+        val totalConCausa = cantidades.sumOf { it.toLong() }
+        if (rechazadasConCausa != rechazadas.toLong() || totalConCausa - rechazadasConCausa != enReproceso.toLong()) {
+            _errorCausas.value = R.string.error_cantidad_causas
+            return null
+        }
+
         val nuevaInspeccion = InspeccionCalidad(
             id = generarIdInspeccion(),
             ordenTrabajo = ot,
@@ -279,10 +324,23 @@ class CalidadViewModel : ViewModel() {
             supervisor = SUPERVISOR_SESION
         )
 
+        val nuevosDefectos = causas.mapIndexed { indice, causa ->
+            Defecto(
+                id = generarIdDefecto(),
+                inspeccionId = nuevaInspeccion.id,
+                ordenTrabajo = ot,
+                lote = lote,
+                tipo = checkNotNull(causa.tipo),
+                causa = checkNotNull(causa.causa),
+                disposicion = checkNotNull(causa.disposicion),
+                prendasAfectadas = cantidades[indice],
+                estado = EstadoIncidencia.PENDIENTE,
+                fechaHora = nuevaInspeccion.fechaHora
+            )
+        }
         _inspecciones.value = _inspecciones.value.orEmpty() + nuevaInspeccion
-
-        if (rechazadas + enReproceso > 0) {
-            _solicitudRegistroCausa.value = Evento(nuevaInspeccion)
+        if (nuevosDefectos.isNotEmpty()) {
+            _defectos.value = _defectos.value.orEmpty() + nuevosDefectos
         }
 
         limpiarFormularioInspeccion()
@@ -291,6 +349,8 @@ class CalidadViewModel : ViewModel() {
 
     fun limpiarFormularioInspeccion() {
         inspeccionForm = InspeccionFormState()
+        causasInspeccion = emptyList()
+        _errorCausas.value = null
         _erroresInspeccion.value = InspeccionErrores()
         actualizarBalanceEnVivo()
     }

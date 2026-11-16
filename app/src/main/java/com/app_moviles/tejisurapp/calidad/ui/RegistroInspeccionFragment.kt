@@ -5,16 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.app_moviles.tejisurapp.MainActivity
 import com.app_moviles.tejisurapp.R
 import com.app_moviles.tejisurapp.calidad.model.AnalisisInspeccion
 import com.app_moviles.tejisurapp.calidad.model.InspeccionCalidad
 import com.app_moviles.tejisurapp.databinding.FragmentRegistroInspeccionBinding
+import com.app_moviles.tejisurapp.databinding.ItemCausaInspeccionBinding
 import com.app_moviles.tejisurapp.produccion.ui.adaptadorConHint
 import com.app_moviles.tejisurapp.produccion.ui.alSeleccionar
 import com.app_moviles.tejisurapp.produccion.ui.mostrarError
@@ -47,6 +47,7 @@ class RegistroInspeccionFragment : Fragment() {
         configurarDatosAutomaticos()
         configurarAdaptadoresFijos()
         renderizarFormulario()
+        renderizarCausas()
         configurarListeners()
         observarEstadoViewModel()
     }
@@ -100,11 +101,17 @@ class RegistroInspeccionFragment : Fragment() {
             viewModel.onInspeccionReprocesoCambiada(texto?.toString().orEmpty())
         }
 
+        btnAgregarCausa.setOnClickListener {
+            viewModel.agregarCausa()
+            renderizarCausas()
+        }
+
         btnRegistrarInspeccion.setOnClickListener {
             val inspeccion = viewModel.registrarInspeccion()
             if (inspeccion != null) {
                 mostrarExito(inspeccion)
                 renderizarFormulario()
+                renderizarCausas()
             }
         }
     }
@@ -112,6 +119,9 @@ class RegistroInspeccionFragment : Fragment() {
     private fun observarEstadoViewModel() = with(binding) {
         viewModel.indicadorSuma.observe(viewLifecycleOwner) { balance ->
             tvBalanceSuma.text = balance
+            val form = viewModel.inspeccionForm
+            cardCausas.isVisible = (form.rechazadas.toIntOrNull() ?: 0) > 0 ||
+                (form.enReproceso.toIntOrNull() ?: 0) > 0
         }
 
         viewModel.resultadoEnVivo.observe(viewLifecycleOwner) { resultado ->
@@ -146,10 +156,57 @@ class RegistroInspeccionFragment : Fragment() {
             )
         }
 
-        viewModel.solicitudRegistroCausa.observe(viewLifecycleOwner) { evento ->
-            evento.obtenerSiNoManejado()?.let { inspeccionConDefectos ->
-                mostrarDialogoDefecto(inspeccionConDefectos)
+        viewModel.errorCausas.observe(viewLifecycleOwner) { error ->
+            tvErrorCausas.mostrarError(error)
+        }
+    }
+
+    private fun renderizarCausas(): Unit = with(binding) {
+        listaCausas.removeAllViews()
+        viewModel.causasInspeccion.forEachIndexed { indice, causa ->
+            val fila = ItemCausaInspeccionBinding.inflate(layoutInflater, listaCausas, false)
+            fila.root.isSaveFromParentEnabled = false
+            with(fila) {
+                val tipos = viewModel.tiposDefecto
+                val causas = viewModel.causasDefecto
+                val disposiciones = viewModel.disposiciones
+                spinnerTipo.adapter = requireContext().adaptadorConHint(
+                    getString(R.string.inspeccion_tipo_defecto), tipos.map { getString(it.etiquetaRes) }
+                )
+                spinnerCausa.adapter = requireContext().adaptadorConHint(
+                    getString(R.string.inspeccion_causa_defecto), causas.map { getString(it.etiquetaRes) }
+                )
+                spinnerDisposicion.adapter = requireContext().adaptadorConHint(
+                    getString(R.string.inspeccion_disposicion_defecto), disposiciones.map { getString(it.etiquetaRes) }
+                )
+                spinnerTipo.setSelection(tipos.indexOfFirst { it == causa.tipo } + 1)
+                spinnerCausa.setSelection(causas.indexOfFirst { it == causa.causa } + 1)
+                spinnerDisposicion.setSelection(disposiciones.indexOfFirst { it == causa.disposicion } + 1)
+                etCantidad.setText(causa.cantidad)
+
+                fun actualizarFila() {
+                    if (root.parent != listaCausas) return
+                    viewModel.actualizarCausa(
+                        indice,
+                        CalidadViewModel.DefectoForm(
+                            tipo = tipos.getOrNull(spinnerTipo.selectedItemPosition - 1),
+                            causa = causas.getOrNull(spinnerCausa.selectedItemPosition - 1),
+                            disposicion = disposiciones.getOrNull(spinnerDisposicion.selectedItemPosition - 1),
+                            cantidad = etCantidad.text.toString()
+                        )
+                    )
+                }
+
+                spinnerTipo.alSeleccionar { actualizarFila() }
+                spinnerCausa.alSeleccionar { actualizarFila() }
+                spinnerDisposicion.alSeleccionar { actualizarFila() }
+                etCantidad.doAfterTextChanged { actualizarFila() }
+                btnQuitarCausa.setOnClickListener {
+                    viewModel.quitarCausa(indice)
+                    renderizarCausas()
+                }
             }
+            listaCausas.addView(fila.root)
         }
     }
 
@@ -197,23 +254,6 @@ class RegistroInspeccionFragment : Fragment() {
             ),
             Toast.LENGTH_LONG
         ).show()
-    }
-
-    private fun mostrarDialogoDefecto(inspeccion: InspeccionCalidad) {
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.dialogo_defecto_titulo)
-            .setMessage(
-                getString(
-                    R.string.dialogo_defecto_mensaje,
-                    inspeccion.rechazadas,
-                    inspeccion.enReproceso
-                )
-            )
-            .setPositiveButton(R.string.dialogo_defecto_btn_registrar_causa) { _, _ ->
-                (activity as? MainActivity)?.mostrarSeccion(MainActivity.Seccion.DEFECTOS)
-            }
-            .setNegativeButton(R.string.alerta_btn_entendido, null)
-            .show()
     }
 
     override fun onDestroyView() {

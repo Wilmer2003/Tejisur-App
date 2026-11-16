@@ -87,8 +87,8 @@ object AnalisisInspeccion {
                 errorReproceso == null
 
         val errorSuma = if (cantidadesValidas) {
-            val suma = aprobadas!! + rechazadas!! + enReproceso!!
-            if (suma != inspeccionadas!!) TipoError.SUMA_NO_COINCIDE else null
+            val suma = aprobadas!!.toLong() + rechazadas!! + enReproceso!!
+            if (suma != inspeccionadas!!.toLong()) TipoError.SUMA_NO_COINCIDE else null
         } else {
             null
         }

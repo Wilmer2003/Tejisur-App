@@ -455,6 +455,50 @@
         </LinearLayout>
 
         <!-- Botón de Registro de Inspección -->
+        <LinearLayout
+            android:id="@+id/cardCausas"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_section"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:padding="@dimen/padding_card"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardBalance">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/inspeccion_causas_titulo"
+                android:textColor="@color/tejisur_primary"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/listaCausas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <Button
+                android:id="@+id/btnAgregarCausa"
+                style="?attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/inspeccion_agregar_causa"
+                android:textAllCaps="false" />
+
+            <TextView
+                android:id="@+id/tvErrorCausas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:accessibilityLiveRegion="polite"
+                android:textColor="@color/tejisur_error"
+                android:textSize="@dimen/text_error"
+                android:visibility="gone" />
+        </LinearLayout>
+
         <Button
             android:id="@+id/btnRegistrarInspeccion"
             android:layout_width="0dp"
@@ -468,7 +512,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardBalance" />
+            app:layout_constraintTop_toBottomOf="@id/cardCausas" />
 
         <TextView
             android:id="@+id/tvErrorFormulario"

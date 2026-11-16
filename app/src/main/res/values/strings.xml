@@ -140,9 +140,15 @@
 
     <!-- Éxito y Diálogo de HU04 -->
     <string name="inspeccion_registrada_exito">Inspección registrada: %1$d prendas inspeccionadas, %2$d aprobadas (OT %3$s · Lote %4$s)</string>
-    <string name="dialogo_defecto_titulo">Defecto detectado</string>
-    <string name="dialogo_defecto_mensaje">Se registraron %1$d prendas rechazadas y %2$d en reproceso. Registre la causa del defecto.</string>
-    <string name="dialogo_defecto_btn_registrar_causa">Registrar causa</string>
+    <string name="inspeccion_causas_titulo">Causas de defecto</string>
+    <string name="inspeccion_agregar_causa">Agregar causa</string>
+    <string name="inspeccion_quitar_causa">Quitar causa</string>
+    <string name="inspeccion_tipo_defecto">Tipo de defecto</string>
+    <string name="inspeccion_causa_defecto">Causa del defecto</string>
+    <string name="inspeccion_disposicion_defecto">Disposición</string>
+    <string name="inspeccion_prendas_afectadas">Prendas afectadas</string>
+    <string name="error_causa_incompleta">Selecciona el tipo, la causa y la disposición de cada defecto e ingresa una cantidad mayor que cero.</string>
+    <string name="error_cantidad_causas">Las causas deben cubrir todas las prendas rechazadas y en reproceso, según su disposición.</string>
 
     <!-- Disposición del defecto -->
     <string name="disposicion_rechazo">Rechazo</string>
