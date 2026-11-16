@@ -65,6 +65,32 @@
             android:textStyle="bold"
             android:textSize="@dimen/text_error"
             app:drawableTopCompat="@drawable/ic_analytics" />
+
+        <TextView
+            android:id="@+id/navInspeccion"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:drawablePadding="2dp"
+            android:gravity="center"
+            android:text="@string/nav_inspeccion"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_error"
+            app:drawableTopCompat="@drawable/ic_fact_check" />
+
+        <TextView
+            android:id="@+id/navDefectos"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:drawablePadding="2dp"
+            android:gravity="center"
+            android:text="@string/nav_defectos"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_error"
+            app:drawableTopCompat="@drawable/ic_report_problem" />
     </LinearLayout>
 
 </LinearLayout>

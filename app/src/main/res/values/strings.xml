@@ -99,6 +99,79 @@
     <string name="nav_consumo">Consumo</string>
     <string name="nav_merma">Merma</string>
     <string name="nav_consulta">Consulta</string>
+    <string name="nav_inspeccion">Inspección</string>
+    <string name="nav_defectos">Defectos</string>
+
+    <!-- ========== EP02 - Calidad (Sprint 2) ========== -->
+    <string name="placeholder_registro_inspeccion_titulo">Registro de Inspección</string>
+    <string name="placeholder_registro_inspeccion_descripcion">Módulo provisional de inspección de calidad (EP02).</string>
+    <string name="placeholder_consulta_defectos_titulo">Consulta de Defectos</string>
+    <string name="placeholder_consulta_defectos_descripcion">Módulo provisional de consulta de defectos (EP02).</string>
+
+    <!-- HU04 - Registro y Validación de Inspección de Calidad -->
+    <string name="inspeccion_titulo">Registrar Inspección</string>
+    <string name="inspeccion_subtitulo">Resultado de la inspección de calidad de prendas</string>
+    <string name="label_operario">Operario asociado</string>
+    <string name="spinner_hint_operario">Seleccione un operario</string>
+    <string name="label_conteo_prendas">Conteo de prendas</string>
+    <string name="label_cant_inspeccionada">Cantidad inspeccionada</string>
+    <string name="label_cant_aprobada">Cantidad aprobada</string>
+    <string name="label_cant_rechazada">Cantidad rechazada</string>
+    <string name="label_cant_reproceso">Cantidad en reproceso</string>
+    <string name="hint_cantidad_cero">0</string>
+    <string name="balance_control_titulo">Balance de control</string>
+    <string name="balance_suma_formato">Suma: %1$d de %2$d</string>
+    <string name="resultado_sin_definir">Sin definir</string>
+    <string name="resultado_sin_rechazo_ni_reproceso">Sin rechazo ni reproceso</string>
+    <string name="resultado_con_rechazo_o_reproceso">Con rechazo o reproceso</string>
+    <string name="btn_registrar_inspeccion">Registrar inspección</string>
+    <string name="inspeccion_supervisor_formato">Supervisor: %1$s (automático)</string>
+    <string name="inspeccion_fecha_hora_formato">Fecha y hora: %1$s (automática)</string>
+
+    <!-- Errores específicos de HU04 -->
+    <string name="error_operario_requerido">Debe seleccionar un operario</string>
+    <string name="error_inspeccionadas_requeridas">Ingrese la cantidad inspeccionada</string>
+    <string name="error_inspeccionadas_mayor_cero">La cantidad inspeccionada debe ser mayor a 0</string>
+    <string name="error_aprobadas_requeridas">Ingrese la cantidad aprobada</string>
+    <string name="error_rechazadas_requeridas">Ingrese la cantidad rechazada</string>
+    <string name="error_reproceso_requerido">Ingrese la cantidad en reproceso</string>
+    <string name="error_cantidad_entera_invalida">Debe ser un número entero mayor o igual a 0</string>
+    <string name="error_suma_inspeccion">La suma de aprobadas, rechazadas y en reproceso debe ser igual a la cantidad inspeccionada</string>
+
+    <!-- Éxito y Diálogo de HU04 -->
+    <string name="inspeccion_registrada_exito">Inspección registrada: %1$d prendas inspeccionadas, %2$d aprobadas (OT %3$s · Lote %4$s)</string>
+    <string name="inspeccion_causas_titulo">Causas de defecto</string>
+    <string name="inspeccion_agregar_causa">Agregar causa</string>
+    <string name="inspeccion_quitar_causa">Quitar causa</string>
+    <string name="inspeccion_tipo_defecto">Tipo de defecto</string>
+    <string name="inspeccion_causa_defecto">Causa del defecto</string>
+    <string name="inspeccion_disposicion_defecto">Disposición</string>
+    <string name="inspeccion_prendas_afectadas">Prendas afectadas</string>
+    <string name="error_causa_incompleta">Selecciona el tipo, la causa y la disposición de cada defecto e ingresa una cantidad mayor que cero.</string>
+    <string name="error_cantidad_causas">Las causas deben cubrir todas las prendas rechazadas y en reproceso, según su disposición.</string>
+
+    <!-- Disposición del defecto -->
+    <string name="disposicion_rechazo">Rechazo</string>
+    <string name="disposicion_reproceso">Reproceso</string>
+
+    <!-- Estado de incidencia -->
+    <string name="estado_incidencia_pendiente">Pendiente</string>
+    <string name="estado_incidencia_atendida">Atendida</string>
+
+    <!-- Catálogo provisional de tipos de defecto -->
+    <string name="tipo_defecto_costura_abierta">Costura abierta</string>
+    <string name="tipo_defecto_mancha_suciedad">Mancha o suciedad</string>
+    <string name="tipo_defecto_medida_fuera_tolerancia">Medida fuera de tolerancia</string>
+    <string name="tipo_defecto_tela_fallada">Tela fallada</string>
+    <string name="tipo_defecto_hilo_suelto">Hilo suelto</string>
+
+    <!-- Catálogo provisional de causas de defecto -->
+    <string name="causa_defecto_maquina_descalibrada">Máquina descalibrada</string>
+    <string name="causa_defecto_aguja_desgastada">Aguja desgastada</string>
+    <string name="causa_defecto_tension_hilo_incorrecta">Tensión de hilo incorrecta</string>
+    <string name="causa_defecto_error_operario">Error de operario</string>
+    <string name="causa_defecto_material_defectuoso">Material defectuoso</string>
+    <string name="causa_defecto_otra_causa">Otra causa</string>
 
     <!-- ========== Login de Operario (requisito HU01) ========== -->
     <string name="login_titulo">TEJISUR - Control de Producción</string>
