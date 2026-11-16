@@ -1,9 +1,12 @@
 package com.app_moviles.tejisurapp.calidad.ui
 
+import android.content.Context
+import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.app_moviles.tejisurapp.R
 import com.app_moviles.tejisurapp.calidad.model.AlertaReincidencia
 import com.app_moviles.tejisurapp.calidad.model.AnalisisInspeccion
@@ -18,6 +21,10 @@ import com.app_moviles.tejisurapp.calidad.model.RastreadorReincidencias
 import com.app_moviles.tejisurapp.calidad.model.TipoDefecto
 import com.app_moviles.tejisurapp.produccion.model.ConfiguracionPlanta
 import com.app_moviles.tejisurapp.produccion.ui.Evento
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
 import java.time.LocalDateTime
 import java.util.Locale
 
@@ -49,7 +56,9 @@ class CalidadViewModel : ViewModel() {
         val causa: CausaDefecto? = null,
         val disposicion: DisposicionDefecto? = null,
         val cantidad: String = "",
-        val esGrupoAprobado: Boolean = false
+        val esGrupoAprobado: Boolean = false,
+        val idGrupo: Long,
+        val foto: FotoDefecto? = null
     )
 
     data class InspeccionErrores(
@@ -151,8 +160,68 @@ class CalidadViewModel : ViewModel() {
     private val _nuevasAlertas = MutableLiveData<Evento<List<AlertaReincidencia>>>()
     val nuevasAlertas: LiveData<Evento<List<AlertaReincidencia>>> = _nuevasAlertas
 
+    private data class SolicitudFoto(val idGrupo: Long, val foto: FotoDefecto)
+
+    private var siguienteGrupoId = 1L
+    private var solicitudFoto: SolicitudFoto? = null
+    private val fotosRegistradas = mutableListOf<FotoDefecto>()
+
+    private val _fotoOcupada = MutableLiveData(false)
+    val fotoOcupada: LiveData<Boolean> = _fotoOcupada
+
+    private val _resultadoFoto = MutableLiveData<Evento<Boolean>>()
+    val resultadoFoto: LiveData<Evento<Boolean>> = _resultadoFoto
+
+    fun iniciarSolicitudFoto(idGrupo: Long, foto: FotoDefecto) {
+        solicitudFoto = SolicitudFoto(idGrupo, foto)
+        _fotoOcupada.value = true
+    }
+
+    fun cancelarSolicitudFoto() {
+        solicitudFoto?.foto?.archivo?.delete()
+        solicitudFoto = null
+        _fotoOcupada.value = false
+    }
+
+    fun recibirFoto(contexto: Context, seleccion: Uri? = null) {
+        val solicitud = solicitudFoto ?: return
+        viewModelScope.launch {
+            val foto = solicitud.foto
+            try {
+                val valida = withContext(Dispatchers.IO) {
+                    if (seleccion != null) foto.importar(contexto, seleccion)
+                    decodificarFoto(contexto, foto.uri, 128) != null
+                }
+                val indice = causasInspeccion.indexOfFirst { it.idGrupo == solicitud.idGrupo }
+                if (valida && indice >= 0) {
+                    val grupo = causasInspeccion[indice]
+                    actualizarCausa(indice, grupo.copy(foto = foto))
+                    grupo.foto?.archivo?.delete()
+                    solicitudFoto = null
+                    _resultadoFoto.value = Evento(true)
+                } else if (!valida) {
+                    _resultadoFoto.value = Evento(false)
+                }
+            } catch (_: IOException) {
+                _resultadoFoto.value = Evento(false)
+            } catch (_: SecurityException) {
+                _resultadoFoto.value = Evento(false)
+            } finally {
+                cancelarSolicitudFoto()
+            }
+        }
+    }
+
+    fun quitarFoto(indice: Int) {
+        val grupo = causasInspeccion.getOrNull(indice) ?: return
+        grupo.foto?.archivo?.delete()
+        actualizarCausa(indice, grupo.copy(foto = null))
+    }
+
     fun agregarCausa(esGrupoAprobado: Boolean = false) {
-        causasInspeccion = causasInspeccion + DefectoForm(esGrupoAprobado = esGrupoAprobado)
+        causasInspeccion = causasInspeccion + DefectoForm(
+            esGrupoAprobado = esGrupoAprobado, idGrupo = siguienteGrupoId++
+        )
         _errorCausas.value = null
     }
 
@@ -163,6 +232,7 @@ class CalidadViewModel : ViewModel() {
     }
 
     fun quitarCausa(indice: Int) {
+        causasInspeccion.getOrNull(indice)?.foto?.archivo?.delete()
         causasInspeccion = causasInspeccion.toMutableList().apply { removeAt(indice) }
         _errorCausas.value = null
     }
@@ -356,9 +426,12 @@ class CalidadViewModel : ViewModel() {
                 disposicion = checkNotNull(causa.disposicion),
                 prendasAfectadas = cantidades[indice],
                 estado = EstadoIncidencia.PENDIENTE,
+                fotoUri = causa.foto?.uri?.toString(),
                 fechaHora = nuevaInspeccion.fechaHora
             )
         }
+        fotosRegistradas += grupos.mapNotNull { it.foto }
+        if (!tieneDefectos) causasInspeccion.forEach { it.foto?.archivo?.delete() }
         _inspecciones.value = _inspecciones.value.orEmpty() + nuevaInspeccion
         if (nuevosDefectos.isNotEmpty()) {
             _defectos.value = _defectos.value.orEmpty() + nuevosDefectos
@@ -404,6 +477,13 @@ class CalidadViewModel : ViewModel() {
 
     fun defectosDeInspeccion(inspeccionId: String): List<Defecto> =
         _defectos.value.orEmpty().filter { it.inspeccionId == inspeccionId }
+
+    override fun onCleared() {
+        solicitudFoto?.foto?.archivo?.delete()
+        causasInspeccion.forEach { it.foto?.archivo?.delete() }
+        fotosRegistradas.forEach { it.archivo.delete() }
+        super.onCleared()
+    }
 
     companion object {
         const val SIN_SELECCION = -1

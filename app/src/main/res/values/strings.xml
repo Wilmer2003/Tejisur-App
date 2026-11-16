@@ -221,4 +221,15 @@
     <string name="reincidencia_regla">Umbral de Planta: %1$d prendas consecutivas con el mismo defecto.</string>
     <string name="reincidencia_sin_alertas">Aún no hay alertas de reincidencia en esta sesión.</string>
     <string name="reincidencia_resumen">%1$s\n%2$s · Lote %3$s\n%4$d prendas consecutivas · Umbral %5$d</string>
+    <string name="foto_defecto_opcional">Foto del defecto (opcional)</string>
+    <string name="foto_defecto_descripcion">Evidencia fotográfica del defecto</string>
+    <string name="foto_defecto_tomar">Tomar foto</string>
+    <string name="foto_defecto_elegir">Elegir foto</string>
+    <string name="foto_defecto_retomar">Volver a tomar</string>
+    <string name="foto_defecto_elegir_otra">Elegir otra foto</string>
+    <string name="foto_defecto_quitar">Quitar foto</string>
+    <string name="foto_defecto_error">No se pudo adjuntar la foto. Prueba con otra imagen.</string>
+    <string name="foto_defecto_cargando">Cargando evidencia…</string>
+    <string name="foto_defecto_sin_foto">Sin foto adjunta</string>
+    <string name="foto_defecto_no_disponible">La foto adjunta no está disponible.</string>
 </resources>

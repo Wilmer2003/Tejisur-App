@@ -1,12 +1,19 @@
 package com.app_moviles.tejisurapp.calidad.ui
 
 import android.app.Dialog
+import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.app_moviles.tejisurapp.R
+import com.app_moviles.tejisurapp.databinding.DialogDetalleDefectoBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -38,7 +45,21 @@ class DetalleDefectoDialog : DialogFragment() {
             inspeccion?.let { add(getString(R.string.defectos_operario_formato, it.operario)) }
             add(getString(R.string.defectos_fecha_formato, fecha))
         }.joinToString("\n")
-        return dialogo.setTitle(defecto.tipo.etiquetaRes).setMessage(mensaje).create()
+        val contenido = DialogDetalleDefectoBinding.inflate(layoutInflater)
+        contenido.tvDetalle.text = mensaje
+        if (defecto.fotoUri != null) {
+            contenido.tvEstadoFoto.setText(R.string.foto_defecto_cargando)
+            val contexto = requireContext().applicationContext
+            val uri = Uri.parse(defecto.fotoUri)
+            lifecycleScope.launch {
+                val bitmap = withContext(Dispatchers.IO) { decodificarFoto(contexto, uri, 1280) }
+                contenido.imgEvidencia.isVisible = bitmap != null
+                contenido.imgEvidencia.setImageBitmap(bitmap)
+                contenido.tvEstadoFoto.isVisible = bitmap == null
+                contenido.tvEstadoFoto.setText(R.string.foto_defecto_no_disponible)
+            }
+        }
+        return dialogo.setTitle(defecto.tipo.etiquetaRes).setView(contenido.root).create()
     }
 
     companion object {

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/margin_screen"
+        android:paddingTop="@dimen/margin_label">
+
+        <ImageView
+            android:id="@+id/imgEvidencia"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:contentDescription="@string/foto_defecto_descripcion"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tvEstadoFoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:accessibilityLiveRegion="polite"
+            android:text="@string/foto_defecto_sin_foto"
+            android:textSize="@dimen/text_label" />
+
+        <TextView
+            android:id="@+id/tvDetalle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_label"
+            android:textSize="@dimen/text_body" />
+    </LinearLayout>
+</ScrollView>
