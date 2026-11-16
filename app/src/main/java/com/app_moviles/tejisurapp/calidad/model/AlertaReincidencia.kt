@@ -10,7 +10,7 @@ data class AlertaReincidencia(
     val tipoDefecto: TipoDefecto,
     val ordenTrabajo: String,
     val lote: String,
-    val repeticiones: Int,
+    val repeticiones: Long,
     val umbral: Int,
     val fechaHora: LocalDateTime
 ) {
@@ -19,4 +19,3 @@ data class AlertaReincidencia(
         require(umbral >= 2) { "El umbral debe ser al menos 2" }
     }
 }
-
