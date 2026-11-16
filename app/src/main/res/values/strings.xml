@@ -105,8 +105,6 @@
     <!-- ========== EP02 - Calidad (Sprint 2) ========== -->
     <string name="placeholder_registro_inspeccion_titulo">Registro de Inspección</string>
     <string name="placeholder_registro_inspeccion_descripcion">Módulo provisional de inspección de calidad (EP02).</string>
-    <string name="placeholder_consulta_defectos_titulo">Consulta de Defectos</string>
-    <string name="placeholder_consulta_defectos_descripcion">Módulo provisional de consulta de defectos (EP02).</string>
 
     <!-- HU04 - Registro y Validación de Inspección de Calidad -->
     <string name="inspeccion_titulo">Registrar Inspección</string>
@@ -186,4 +184,30 @@
     <string name="login_error_contrasena_requerida">Ingrese su contraseña</string>
     <string name="login_error_credenciales">Usuario o contraseña incorrectos</string>
     <string name="login_exito">Bienvenido, %1$s</string>
+    <string name="defectos_consulta_titulo">Consulta de defectos</string>
+    <string name="defectos_lote_etiqueta">Lote de producción</string>
+    <string name="defectos_estado_etiqueta">Estado de la incidencia</string>
+    <string name="defectos_todos_estados">Todos los estados</string>
+    <string name="defectos_lote_opcion">%1$s · %2$s</string>
+    <string name="defectos_seleccionar_lote">Selecciona un lote para consultar sus defectos y reprocesos.</string>
+    <string name="defectos_lote_sin_registros">Este lote no tiene defectos registrados.</string>
+    <string name="defectos_sin_resultados_filtro">No hay defectos con el estado seleccionado.</string>
+    <string name="defectos_detalle_titulo">Detalle del defecto</string>
+    <string name="defectos_detalle_no_disponible">El defecto ya no está disponible en esta sesión.</string>
+    <string name="defectos_causa_formato">Causa: %1$s</string>
+    <string name="defectos_disposicion_cantidad">%1$s · %2$s</string>
+    <string name="defectos_disposicion_formato">Disposición: %1$s</string>
+    <string name="defectos_estado_formato">Estado: %1$s</string>
+    <string name="defectos_prendas_formato">Prendas afectadas: %1$d</string>
+    <string name="defectos_inspeccion_formato">Inspección: %1$s</string>
+    <string name="defectos_operario_formato">Operario: %1$s</string>
+    <string name="defectos_fecha_formato">Fecha y hora: %1$s</string>
+    <plurals name="defectos_resultados">
+        <item quantity="one">%d defecto encontrado</item>
+        <item quantity="other">%d defectos encontrados</item>
+    </plurals>
+    <plurals name="defectos_prendas">
+        <item quantity="one">%d prenda afectada</item>
+        <item quantity="other">%d prendas afectadas</item>
+    </plurals>
 </resources>
