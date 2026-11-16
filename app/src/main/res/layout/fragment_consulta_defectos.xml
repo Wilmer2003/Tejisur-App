@@ -3,29 +3,87 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tejisur_background"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="@dimen/margin_screen">
+    android:orientation="vertical">
 
     <TextView
-        android:id="@+id/tvTituloDefectos"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/placeholder_consulta_defectos_titulo"
-        android:textColor="@color/tejisur_text_primary"
+        android:accessibilityHeading="true"
+        android:background="@color/tejisur_primary"
+        android:padding="@dimen/padding_card"
+        android:text="@string/defectos_consulta_titulo"
+        android:textColor="@color/white"
         android:textSize="@dimen/text_title"
         android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/tvDescripcionDefectos"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_screen"
+        android:layout_marginTop="@dimen/padding_card"
+        android:background="@drawable/bg_card"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_card">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/spinnerLote"
+            android:text="@string/defectos_lote_etiqueta"
+            android:textColor="@color/tejisur_text_primary"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@id/spinnerLote"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_input"
+            android:contentDescription="@string/defectos_lote_etiqueta" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/spinnerEstado"
+            android:text="@string/defectos_estado_etiqueta"
+            android:textColor="@color/tejisur_text_primary"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@id/spinnerEstado"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_input"
+            android:contentDescription="@string/defectos_estado_etiqueta" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvCantidadDefectos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_screen"
         android:layout_marginTop="@dimen/margin_label"
+        android:accessibilityLiveRegion="polite"
+        android:paddingVertical="@dimen/margin_label"
+        android:textColor="@color/tejisur_primary"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tvConsultaVacia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_screen"
+        android:accessibilityLiveRegion="polite"
         android:gravity="center"
-        android:text="@string/placeholder_consulta_defectos_descripcion"
+        android:text="@string/defectos_seleccionar_lote"
         android:textColor="@color/tejisur_text_secondary"
         android:textSize="@dimen/text_body" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/listaDefectos"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingHorizontal="@dimen/margin_screen"
+        android:paddingBottom="@dimen/margin_screen"
+        android:visibility="gone" />
 </LinearLayout>
-
