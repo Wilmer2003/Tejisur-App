@@ -112,7 +112,7 @@ class CalidadBaseTest {
             umbral = 3,
             fechaHora = ahora
         )
-        assertEquals(3, alerta.repeticiones)
+        assertEquals(3L, alerta.repeticiones)
     }
 
     @Test

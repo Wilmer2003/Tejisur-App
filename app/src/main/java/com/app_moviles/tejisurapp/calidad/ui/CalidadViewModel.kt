@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.app_moviles.tejisurapp.R
+import com.app_moviles.tejisurapp.calidad.model.AlertaReincidencia
 import com.app_moviles.tejisurapp.calidad.model.AnalisisInspeccion
 import com.app_moviles.tejisurapp.calidad.model.CatalogoCalidad
 import com.app_moviles.tejisurapp.calidad.model.CausaDefecto
@@ -13,7 +14,10 @@ import com.app_moviles.tejisurapp.calidad.model.Defecto
 import com.app_moviles.tejisurapp.calidad.model.DisposicionDefecto
 import com.app_moviles.tejisurapp.calidad.model.EstadoIncidencia
 import com.app_moviles.tejisurapp.calidad.model.InspeccionCalidad
+import com.app_moviles.tejisurapp.calidad.model.RastreadorReincidencias
 import com.app_moviles.tejisurapp.calidad.model.TipoDefecto
+import com.app_moviles.tejisurapp.produccion.model.ConfiguracionPlanta
+import com.app_moviles.tejisurapp.produccion.ui.Evento
 import java.time.LocalDateTime
 import java.util.Locale
 
@@ -44,7 +48,8 @@ class CalidadViewModel : ViewModel() {
         val tipo: TipoDefecto? = null,
         val causa: CausaDefecto? = null,
         val disposicion: DisposicionDefecto? = null,
-        val cantidad: String = ""
+        val cantidad: String = "",
+        val esGrupoAprobado: Boolean = false
     )
 
     data class InspeccionErrores(
@@ -137,8 +142,17 @@ class CalidadViewModel : ViewModel() {
     private val _errorCausas = MutableLiveData<Int?>(null)
     val errorCausas: LiveData<Int?> = _errorCausas
 
-    fun agregarCausa() {
-        causasInspeccion = causasInspeccion + DefectoForm()
+    val umbralReincidencia = ConfiguracionPlanta().umbralReincidencia
+    private val rastreador = RastreadorReincidencias(umbralReincidencia)
+
+    private val _alertasReincidencia = MutableLiveData<List<AlertaReincidencia>>(emptyList())
+    val alertasReincidencia: LiveData<List<AlertaReincidencia>> = _alertasReincidencia
+
+    private val _nuevasAlertas = MutableLiveData<Evento<List<AlertaReincidencia>>>()
+    val nuevasAlertas: LiveData<Evento<List<AlertaReincidencia>>> = _nuevasAlertas
+
+    fun agregarCausa(esGrupoAprobado: Boolean = false) {
+        causasInspeccion = causasInspeccion + DefectoForm(esGrupoAprobado = esGrupoAprobado)
         _errorCausas.value = null
     }
 
@@ -290,25 +304,31 @@ class CalidadViewModel : ViewModel() {
         val rechazadas = AnalisisInspeccion.parsearEntero(form.rechazadas) ?: return null
         val enReproceso = AnalisisInspeccion.parsearEntero(form.enReproceso) ?: return null
 
-        val causas = if (rechazadas > 0 || enReproceso > 0) causasInspeccion else emptyList()
-        val cantidades = causas.map { AnalisisInspeccion.parsearEntero(it.cantidad) ?: 0 }
-        if (causas.zip(cantidades).any { (causa, cantidad) ->
-                causa.tipo == null || causa.causa == null || causa.disposicion == null || cantidad <= 0
+        val tieneDefectos = rechazadas > 0 || enReproceso > 0
+        val grupos = if (tieneDefectos) causasInspeccion else emptyList()
+        val cantidades = grupos.map { AnalisisInspeccion.parsearEntero(it.cantidad) ?: 0 }
+        if (grupos.zip(cantidades).any { (grupo, cantidad) ->
+                cantidad <= 0 || (!grupo.esGrupoAprobado &&
+                    (grupo.tipo == null || grupo.causa == null || grupo.disposicion == null))
             }
         ) {
-            _errorCausas.value = R.string.error_causa_incompleta
+            _errorCausas.value = R.string.error_grupo_incompleto
             return null
         }
 
-        val rechazadasConCausa = causas.indices.sumOf { indice ->
-            cantidades[indice].toLong().takeIf {
-                causas[indice].disposicion == DisposicionDefecto.RECHAZO
-            } ?: 0L
-        }
-        val totalConCausa = cantidades.sumOf { it.toLong() }
-        if (rechazadasConCausa != rechazadas.toLong() || totalConCausa - rechazadasConCausa != enReproceso.toLong()) {
-            _errorCausas.value = R.string.error_cantidad_causas
-            return null
+        if (tieneDefectos) {
+            val aprobadasEnGrupos = grupos.indices.filter { grupos[it].esGrupoAprobado }
+                .sumOf { cantidades[it].toLong() }
+            val rechazadasEnGrupos = grupos.indices
+                .filter { grupos[it].disposicion == DisposicionDefecto.RECHAZO }
+                .sumOf { cantidades[it].toLong() }
+            val enReprocesoEnGrupos = cantidades.sumOf { it.toLong() } - aprobadasEnGrupos - rechazadasEnGrupos
+            if (aprobadasEnGrupos != aprobadas.toLong() || rechazadasEnGrupos != rechazadas.toLong() ||
+                enReprocesoEnGrupos != enReproceso.toLong()
+            ) {
+                _errorCausas.value = R.string.error_cantidad_grupos
+                return null
+            }
         }
 
         val nuevaInspeccion = InspeccionCalidad(
@@ -324,7 +344,8 @@ class CalidadViewModel : ViewModel() {
             supervisor = SUPERVISOR_SESION
         )
 
-        val nuevosDefectos = causas.mapIndexed { indice, causa ->
+        val nuevosDefectos = grupos.mapIndexedNotNull { indice, causa ->
+            if (causa.esGrupoAprobado) return@mapIndexedNotNull null
             Defecto(
                 id = generarIdDefecto(),
                 inspeccionId = nuevaInspeccion.id,
@@ -341,6 +362,17 @@ class CalidadViewModel : ViewModel() {
         _inspecciones.value = _inspecciones.value.orEmpty() + nuevaInspeccion
         if (nuevosDefectos.isNotEmpty()) {
             _defectos.value = _defectos.value.orEmpty() + nuevosDefectos
+        }
+
+        val secuencia = if (tieneDefectos) {
+            grupos.mapIndexed { indice, grupo -> RastreadorReincidencias.Grupo(grupo.tipo, cantidades[indice]) }
+        } else {
+            listOf(RastreadorReincidencias.Grupo(null, aprobadas))
+        }
+        val alertas = rastreador.registrar(nuevaInspeccion, secuencia)
+        if (alertas.isNotEmpty()) {
+            _alertasReincidencia.value = alertas + _alertasReincidencia.value.orEmpty()
+            _nuevasAlertas.value = Evento(alertas)
         }
 
         limpiarFormularioInspeccion()

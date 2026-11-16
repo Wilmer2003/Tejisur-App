@@ -13,6 +13,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import com.app_moviles.tejisurapp.calidad.model.AlertaReincidencia
+import com.app_moviles.tejisurapp.calidad.ui.CalidadViewModel
 import com.app_moviles.tejisurapp.calidad.ui.ConsultaDefectosFragment
 import com.app_moviles.tejisurapp.calidad.ui.RegistroInspeccionFragment
 import com.app_moviles.tejisurapp.databinding.ActivityMainBinding
@@ -31,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private val viewModel: ProduccionViewModel by viewModels()
+    private val calidadViewModel: CalidadViewModel by viewModels()
 
     private var seccionActual = Seccion.LOGIN
 
@@ -60,6 +63,9 @@ class MainActivity : AppCompatActivity() {
         // HU16 - Alerta por merma excesiva
         viewModel.alertaMerma.observe(this) { evento ->
             evento.obtenerSiNoManejado()?.let(::mostrarAlertaMerma)
+        }
+        calidadViewModel.nuevasAlertas.observe(this) { evento ->
+            evento.obtenerSiNoManejado()?.let(::mostrarNuevasAlertasCalidad)
         }
     }
 
@@ -128,6 +134,37 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton(R.string.alerta_btn_entendido, null)
             .show()
     }
+
+    private fun mostrarNuevasAlertasCalidad(alertas: List<AlertaReincidencia>) {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.reincidencia_detectada)
+            .setMessage(alertas.joinToString("\n\n", transform = ::describirAlertaCalidad))
+            .setPositiveButton(R.string.reincidencia_ver_alertas) { _, _ -> mostrarAlertasCalidad() }
+            .setNegativeButton(android.R.string.ok, null)
+            .show()
+    }
+
+    fun mostrarAlertasCalidad() {
+        val alertas = calidadViewModel.alertasReincidencia.value.orEmpty()
+        val regla = getString(R.string.reincidencia_regla, calidadViewModel.umbralReincidencia)
+        val historial = if (alertas.isEmpty()) getString(R.string.reincidencia_sin_alertas)
+        else alertas.joinToString("\n\n", transform = ::describirAlertaCalidad)
+        AlertDialog.Builder(this)
+            .setTitle(R.string.reincidencia_titulo)
+            .setMessage("$regla\n\n$historial")
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
+    }
+
+    private fun describirAlertaCalidad(alerta: AlertaReincidencia): String =
+        getString(
+            R.string.reincidencia_resumen,
+            getString(alerta.tipoDefecto.etiquetaRes),
+            alerta.ordenTrabajo,
+            alerta.lote,
+            alerta.repeticiones,
+            alerta.umbral
+        )
 
     /** targetSdk 35 dibuja de borde a borde: evita que la barra quede bajo la del sistema. */
     private fun aplicarMargenesDeSistema() {

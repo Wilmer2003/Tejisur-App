@@ -106,6 +106,11 @@ class RegistroInspeccionFragment : Fragment() {
             renderizarCausas()
         }
 
+        btnAgregarAprobadas.setOnClickListener {
+            viewModel.agregarCausa(esGrupoAprobado = true)
+            renderizarCausas()
+        }
+
         btnRegistrarInspeccion.setOnClickListener {
             val inspeccion = viewModel.registrarInspeccion()
             if (inspeccion != null) {
@@ -122,6 +127,7 @@ class RegistroInspeccionFragment : Fragment() {
             val form = viewModel.inspeccionForm
             cardCausas.isVisible = (form.rechazadas.toIntOrNull() ?: 0) > 0 ||
                 (form.enReproceso.toIntOrNull() ?: 0) > 0
+            btnAgregarAprobadas.isVisible = (form.aprobadas.toIntOrNull() ?: 0) > 0
         }
 
         viewModel.resultadoEnVivo.observe(viewLifecycleOwner) { resultado ->
@@ -167,6 +173,16 @@ class RegistroInspeccionFragment : Fragment() {
             val fila = ItemCausaInspeccionBinding.inflate(layoutInflater, listaCausas, false)
             fila.root.isSaveFromParentEnabled = false
             with(fila) {
+                tvGrupo.text = getString(
+                    R.string.inspeccion_grupo_formato,
+                    indice + 1,
+                    getString(if (causa.esGrupoAprobado) R.string.inspeccion_grupo_aprobadas
+                    else R.string.inspeccion_grupo_defecto)
+                )
+                spinnerTipo.isVisible = !causa.esGrupoAprobado
+                spinnerCausa.isVisible = !causa.esGrupoAprobado
+                spinnerDisposicion.isVisible = !causa.esGrupoAprobado
+                if (causa.esGrupoAprobado) etCantidad.setHint(R.string.inspeccion_grupo_aprobadas)
                 val tipos = viewModel.tiposDefecto
                 val causas = viewModel.causasDefecto
                 val disposiciones = viewModel.disposiciones
@@ -192,7 +208,8 @@ class RegistroInspeccionFragment : Fragment() {
                             tipo = tipos.getOrNull(spinnerTipo.selectedItemPosition - 1),
                             causa = causas.getOrNull(spinnerCausa.selectedItemPosition - 1),
                             disposicion = disposiciones.getOrNull(spinnerDisposicion.selectedItemPosition - 1),
-                            cantidad = etCantidad.text.toString()
+                            cantidad = etCantidad.text.toString(),
+                            esGrupoAprobado = causa.esGrupoAprobado
                         )
                     )
                 }
