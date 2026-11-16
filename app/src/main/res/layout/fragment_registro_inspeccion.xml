@@ -475,6 +475,13 @@
                 android:textColor="@color/tejisur_primary"
                 android:textStyle="bold" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_label"
+                android:text="@string/inspeccion_orden_grupos"
+                android:textColor="@color/tejisur_text_secondary" />
+
             <LinearLayout
                 android:id="@+id/listaCausas"
                 android:layout_width="match_parent"
@@ -487,6 +494,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/inspeccion_agregar_causa"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/btnAgregarAprobadas"
+                style="?attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/inspeccion_agregar_aprobadas"
                 android:textAllCaps="false" />
 
             <TextView

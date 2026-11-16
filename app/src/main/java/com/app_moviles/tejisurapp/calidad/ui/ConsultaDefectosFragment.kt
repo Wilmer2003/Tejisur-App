@@ -6,6 +6,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.app_moviles.tejisurapp.MainActivity
 import com.app_moviles.tejisurapp.R
 import com.app_moviles.tejisurapp.calidad.model.CatalogoCalidad
 import com.app_moviles.tejisurapp.calidad.model.EstadoIncidencia
@@ -32,6 +33,9 @@ class ConsultaDefectosFragment : Fragment(R.layout.fragment_consulta_defectos) {
         }
 
         with(binding) {
+            btnAlertasCalidad.setOnClickListener {
+                (activity as? MainActivity)?.mostrarAlertasCalidad()
+            }
             spinnerLote.adapter = requireContext().adaptadorConHint(
                 getString(R.string.spinner_hint_lote),
                 lotes.map { (orden, lote) -> getString(R.string.defectos_lote_opcion, lote, orden) }
