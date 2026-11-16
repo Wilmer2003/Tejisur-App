@@ -224,9 +224,10 @@ class RegistroInspeccionFragment : Fragment() {
             val fila = ItemCausaInspeccionBinding.inflate(layoutInflater, listaCausas, false)
             fila.root.isSaveFromParentEnabled = false
             with(fila) {
+                val numeroGrupo: Int = indice + 1
                 tvGrupo.text = getString(
                     R.string.inspeccion_grupo_formato,
-                    indice + 1,
+                    numeroGrupo,
                     getString(if (causa.esGrupoAprobado) R.string.inspeccion_grupo_aprobadas
                     else R.string.inspeccion_grupo_defecto)
                 )
